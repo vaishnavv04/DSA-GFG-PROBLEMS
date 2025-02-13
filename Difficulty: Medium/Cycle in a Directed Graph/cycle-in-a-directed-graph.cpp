@@ -24,18 +24,48 @@ class Solution {
         pathvis[v] = 0;
         return 0;
     }
-    bool isCyclic(int V, vector<vector<int>> adj) {
+    bool isCyclic(int n, vector<vector<int>> adj) {
         // code here
-        vector<int> vis(V),pathvis(V);
-        for(int i=0;i<V;i++)
+        // vector<int> vis(V),pathvis(V);
+        // for(int i=0;i<V;i++)
+        // {
+        //     if(!vis[i])
+        //     {
+        //         if(dfs(adj,i,vis,pathvis))
+        //         return 1;
+        //     }
+        // }
+        // return 0;
+        vector<int> in(n);
+        queue<int> q;
+        for(auto v:adj)
         {
-            if(!vis[i])
+            for(auto it:v)
             {
-                if(dfs(adj,i,vis,pathvis))
-                return 1;
+                in[it]++;
             }
         }
-        return 0;
+        for(int i=0;i<n;i++)
+        {
+            if(in[i]==0)
+            q.push(i);
+        }
+        vector<int> topo;
+        while (!q.empty())
+        {
+            int node = q.front();
+            q.pop();
+            topo.push_back(node);
+    
+            for (int v : adj[node]) {
+                in[v]--;
+                if (in[v] == 0)
+                    q.push(v);
+            }
+        }
+    
+        // If topological order contains all nodes, return it; otherwise, there's a cycle
+        return (topo.size() == n) ? 0 : 1; 
     }
 };
 
