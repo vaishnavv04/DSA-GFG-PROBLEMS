@@ -8,27 +8,41 @@ using namespace std;
 class Solution {
   public:
     // Function to find sum of weights of edges of the Minimum Spanning Tree.
+    int find(int par[], int x) {
+        if(par[x]==x)
+        return x;
+        return par[x] = find(par,par[x]);
+    }
+
+    void unionSet(int par[], int x, int z) {
+        int parz = find(par,z);
+        int parx = find(par,x);
+        par[parx] = parz;
+    }
     int spanningTree(int V, vector<vector<int>> adj[]) {
         // code here
-        priority_queue<pair<int,int>,vector<pair<int,int>>
-                                        ,greater<pair<int,int>>> pq;
-        vector<int> vis(V);
-        pq.push({0,0});
-        int sum = 0;
-        while(!pq.empty())
+        vector<vector<int>> edges;
+        for(int i=0;i<V;i++)
         {
-            int node = pq.top().second;
-            int wt = pq.top().first;
-            pq.pop();
-            
-            
-            if(vis[node]) continue;
-            vis[node] = 1;
-            sum+=wt;
-            for(auto it:adj[node])
+            for(auto it:adj[i])
             {
-                if(!vis[it[0]])
-                pq.push({it[1],it[0]});
+                edges.push_back({it[1],i,it[0]});
+            }
+        }
+        sort(edges.begin(),edges.end());
+        int par[V];
+        for(int i=0;i<V;i++)
+        par[i] = i;
+        int sum = 0;
+        for(auto edge:edges)
+        {
+            int parz = find(par,edge[1]);
+            int parx = find(par,edge[2]);
+            if(parx==parz) continue;
+            else
+            {
+                sum+=edge[0];
+                unionSet(par,edge[1],edge[2]);
             }
         }
         return sum;
